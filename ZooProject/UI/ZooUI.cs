@@ -7,7 +7,7 @@ using ZooProject.Logic;
 
 namespace ZooProject.UI
 {
-    internal class ZooUI :IDisposable
+    internal class ZooUI 
     {
         private BussinessLogic logic = new BussinessLogic();
 
@@ -51,12 +51,6 @@ namespace ZooProject.UI
 
             }
         }
-
-        public void Dispose()
-        {
-            logic.Dispose();
-        }
-
         private void AddAnimal()
         {
             Console.WriteLine("Enter Type of Animal: ");

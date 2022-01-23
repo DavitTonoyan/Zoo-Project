@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ZooProject.Logic
 {
-    internal class BussinessLogic :IDisposable
-    {
+    internal class BussinessLogic
+    { 
         private List<Animal> animals  = new List<Animal>();
-        //private ManageHungryTime manageHungry = new ManageHungryTime();
 
         public void AddAnimal(int typeOfAnimal, string name,double weight)
         {
@@ -38,7 +37,6 @@ namespace ZooProject.Logic
             }
 
             animals.Add(animal);
-            //manageHungry.AddAnimal(animal);
         }
 
         public Food SetFood(int foodType, double foodWeight)
@@ -105,11 +103,6 @@ namespace ZooProject.Logic
                 sb.Append("\n\n");
             }
             return sb.ToString();
-        }
-
-        public void Dispose()
-        {
-            //manageHungry.Dispose();
         }
     }
 }

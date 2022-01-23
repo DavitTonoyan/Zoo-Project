@@ -5,6 +5,6 @@ using ZooProject.UI;
 using System.Threading;
 Console.WriteLine("Hello, World!");
 
-using ZooUI zoo = new ZooUI();
+ZooUI zoo = new ZooUI();
 zoo.Start();
 
