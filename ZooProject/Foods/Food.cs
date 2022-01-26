@@ -19,7 +19,7 @@ namespace ZooProject
             set
             {
                 if (value <= 0)
-                    throw new ArgumentException("the  weight can't be  less than 0 ");
+                    foodWeight = 0;
 
                 foodWeight = value;
             } 

@@ -7,20 +7,20 @@ using ZooProject.Logic;
 
 namespace ZooProject.UI
 {
-    internal class ZooUI 
+    internal class ZooUI
     {
-        private BussinessLogic logic = new BussinessLogic();
+        private Zoo logic = new Zoo();
 
         public void Start()
         {
             while (true)
             {
                 Console.Clear();
-                ShowAnimals();
-
+                ShowCages();
 
                 Console.WriteLine("Choose your option  ");
-                Console.WriteLine("1) Add animal \n2) Feed to animal \n3) Kill animal \n" +
+                Console.WriteLine("1) Add cage \n2) Add animal \n3) Feed animals of the cage \n"+
+                                  "4) Kill animal \n5) Remove animal \n"+
                                   " Press esc to exit \n");
 
                 ConsoleKey key = Console.ReadKey().Key;
@@ -30,19 +30,31 @@ namespace ZooProject.UI
                     case ConsoleKey.NumPad1:
                     case ConsoleKey.D1:
 
-                        AddAnimal();
+                        AddCage();
                         break;
 
                     case ConsoleKey.NumPad2:
                     case ConsoleKey.D2:
 
-                        FeedToAnimal();
+                        AddAnimal();
                         break;
 
                     case ConsoleKey.NumPad3:
                     case ConsoleKey.D3:
 
+                        FeedCageAnimal();
+                        break;
+
+                    case ConsoleKey.NumPad4:
+                    case ConsoleKey.D4:
+
                         KillAnimal();
+                        break;
+
+                    case ConsoleKey.NumPad5:
+                    case ConsoleKey.D5:
+
+                        RemoveAnimalFromCage();
                         break;
 
                     case ConsoleKey.Escape:
@@ -51,18 +63,55 @@ namespace ZooProject.UI
 
             }
         }
+
+        private void AddCage()
+        {
+            Console.WriteLine("Enter type of animal ");
+            int type = int.Parse(ReadWithLabel("1. Lion   2. Cow   3. Fish"));
+
+            try
+            {
+                logic.AddCage(type);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadLine();
+            }
+            Console.WriteLine("Press any key to continue ");
+            Console.ReadKey();
+        }
+
         private void AddAnimal()
         {
+            int cageId = int.Parse(ReadWithLabel(" Enter cage Id "));
+            cageId--;
             Console.WriteLine("Enter Type of Animal: ");
             int typeOfAnimal = int.Parse(ReadWithLabel("1) Lion  2) Cow  3) Fish "));
 
             string name = ReadWithLabel(" Enter name ");
             double weight = double.Parse(ReadWithLabel(" Enter weight of animal: "));
-
-            logic.AddAnimal(typeOfAnimal, name, weight);
+            try
+            {
+                logic.AddAnimal(cageId, typeOfAnimal, name, weight);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.WriteLine("Press any key to continue ");
+            Console.ReadKey();
         }
 
-        private void FeedToAnimal()
+        private void FeedCageAnimal()
         {
             Console.WriteLine(" Enter food type: ");
             int foodType = int.Parse(ReadWithLabel(" 1) Meet,  2) Grass,  3) Worm "));
@@ -72,7 +121,7 @@ namespace ZooProject.UI
 
             try
             {
-               food = logic.SetFood(foodType, weight);
+                food = logic.SetFood(foodType, weight);
             }
             catch (ArgumentException ex)
             {
@@ -83,37 +132,64 @@ namespace ZooProject.UI
             }
 
 
-            int animalId = int.Parse(ReadWithLabel("Enter Id of animal "));
-
+            int cageId = int.Parse(ReadWithLabel("Enter Id of cage "));
+            cageId--;
             try
             {
-                logic.FeedAnimal(animalId, food);
+                logic.FeedAnimal(cageId, food);
             }
-            catch(InvalidOperationException ex)
+            catch(ArgumentOutOfRangeException ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine("Press any key to continue ");
-                Console.ReadKey();
             }
-            catch(ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine("Press any key to continue ");
-                Console.ReadKey();
             }
+
+            Console.WriteLine("Press any key to continue ");
+            Console.ReadKey();
         }
 
         private void KillAnimal()
         {
-            int id = int.Parse(ReadWithLabel(" Enter Id of animal: "));
+            int cageId = int.Parse(ReadWithLabel(" Enter Id of cage: "));
+            int animalId = int.Parse(ReadWithLabel(" Enter Id of animal: "));
+            cageId--;
 
-            logic.KillAnimal(id);
+            try
+            {
+                logic.KillAnimalFromCage(cageId, animalId);
+            }
+            catch(ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.WriteLine("Press any key to continue ");
+            Console.ReadKey();
         }
 
-        private void ShowAnimals()
+        private void RemoveAnimalFromCage()
         {
-            string s = logic.ShowAnimals();
+            int cageId = int.Parse(ReadWithLabel(" Enter Id of cage: "));
+            int animalId = int.Parse(ReadWithLabel(" Enter Id of animal: "));
+            cageId--;
+            try
+            {
+                logic.RemoveAnimalFromCage(cageId, animalId);
+            }
+            catch(ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
+            Console.WriteLine("Press any key to continue ");
+            Console.ReadKey();
+        }
+
+        private void ShowCages()
+        {
+            string s = logic.ShowCages();
             Console.WriteLine(s);
         }
 
