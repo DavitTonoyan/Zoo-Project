@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ZooProject.Cages
+﻿namespace ZooProject.Cages
 {
     internal interface ICageAnimal
     {
@@ -12,7 +6,7 @@ namespace ZooProject.Cages
         void RemoveAnimal(int animalId);
         void KillAnimal(int animalId);
         void FeedAnimals(Food food);
-        event Action<Food> FeedingAnimals;
+        event Action<Food> FeededAnimals;
 
     }
 }

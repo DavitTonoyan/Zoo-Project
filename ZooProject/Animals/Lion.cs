@@ -1,5 +1,4 @@
-﻿
-namespace ZooProject
+﻿namespace ZooProject
 {
     internal class Lion : Animal
     {

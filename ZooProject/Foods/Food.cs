@@ -1,32 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ZooProject
+﻿namespace ZooProject
 {
     internal class Food
     {
-        private double foodWeight;
+        private double _foodWeight;
 
         public double FoodWeight
         {
-            get 
+            get
             {
-                return foodWeight;
+                return _foodWeight;
             }
             set
             {
                 if (value <= 0)
-                    foodWeight = 0;
+                    _foodWeight = 0;
 
-                foodWeight = value;
-            } 
+                _foodWeight = value;
+            }
         }
         public FoodType FoodType { get; }
-        
-        public Food(FoodType foodType ,  double foodWeight)
+
+        public Food(FoodType foodType, double foodWeight)
         {
             FoodType = foodType;
             FoodWeight = foodWeight;

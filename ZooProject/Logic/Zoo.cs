@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using ZooProject.Cages;
+using ZooProject.Logging;
 
 namespace ZooProject.Logic
 {
     internal class Zoo
     {
-        private List<ICageAnimal> cages = new List<ICageAnimal>();
+        private List<ICageAnimal> _cages = new List<ICageAnimal>();
 
         public void AddCage(int typeOfAnimal)
         {
@@ -41,7 +38,7 @@ namespace ZooProject.Logic
                     }
             }
 
-            cages.Add(new Cage(typeAnimal, typeFood));
+            _cages.Add(new Cage(typeAnimal, typeFood));
         }
 
         public void AddAnimal(int cageId, int typeOfAnimal, string name, double weight)
@@ -65,13 +62,13 @@ namespace ZooProject.Logic
                         break;
                     }
                 default:
-                    { 
+                    {
                         throw new ArgumentException(" The type of animal doesn't exist ");
                     }
             }
 
-            cages[cageId].AddAnimal(animal);
-            cages[cageId].FeedingAnimals += animal.Eat;
+            _cages[cageId].AddAnimal(animal);
+            _cages[cageId].FeededAnimals += animal.Eat;
         }
 
         public Food SetFood(int foodType, double foodWeight)
@@ -108,23 +105,23 @@ namespace ZooProject.Logic
 
         public void FeedAnimal(int cageId, Food food)
         {
-            cages[cageId].FeedAnimals(food);
+            _cages[cageId].FeedAnimals(food);
         }
 
         public void KillAnimalFromCage(int cageId, int animalId)
         {
-            cages[cageId].KillAnimal(animalId);
+            _cages[cageId].KillAnimal(animalId);
         }
 
         public void RemoveAnimalFromCage(int cageId, int animalId)
         {
-            cages[cageId].RemoveAnimal(animalId);
+            _cages[cageId].RemoveAnimal(animalId);
         }
         public string ShowCages()
         {
             StringBuilder sb = new StringBuilder();
 
-            foreach (var cage in cages)
+            foreach (var cage in _cages)
             {
                 sb.Append(cage.ToString());
                 sb.Append("\n\n");
