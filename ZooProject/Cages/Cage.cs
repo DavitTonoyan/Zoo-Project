@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Text;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ZooProject.Logging;
+using ZooProject.Foods;
+using ZooProject.Animals;
 
 namespace ZooProject.Cages
 {
@@ -13,84 +12,66 @@ namespace ZooProject.Cages
         private static ILogger _logger = Logger.CreateInstance();
         private readonly int _idCage;
         private readonly Type _typeAnimal;
-        private readonly FoodType _typeFood;   
+        private Food _food;
         private List<Animal> _animals;
-        private int _countAnimals;
-        private Timer _timer;
-        public event Action<Food> FeededAnimals;
+        private Timer _timerToEatPerSecond;
+        public event EventHandler<FoodEventArgs> FeededAnimals;
 
-        public Cage(Type typeOfAnimal, FoodType food)
+        public Cage(Type typeOfAnimal, FoodType foodType)
         {
             _id++;
             _typeAnimal = typeOfAnimal;
-            _typeFood = food;
+            _food = new Food(foodType);
             _idCage = _id;
             _animals = new List<Animal>();
-
-            _logger.Information($" New cage added  id - {_idCage}  Type of animal - {typeOfAnimal.Name}");
-
-            FeededAnimals += FinishFeeding;
         }
 
         public void AddAnimal(Animal animal)
         {
-            if(animal.GetType() != _typeAnimal )
+            if (animal.GetType() != _typeAnimal)
             {
                 throw new Exception($"{animal.GetType()} doesnt suitable to cage type");
             }
 
-            if(_countAnimals + 1 >5)
+            if (_animals.Count > 5)
             {
                 throw new IndexOutOfRangeException("count of animals can't be greater than 5 ");
             }
 
-
-            _countAnimals++; 
             _animals.Add(animal);
-
-            _logger.Information($" New animal added  in {_idCage} cage animal Type - {_typeAnimal.Name},  Name -{animal.Name}");
         }
 
-        public void RemoveAnimal(int animalId)
+        public bool RemoveAnimal(int animalId)
         {
-            Animal animal = null;
-            foreach(var an in _animals)
-            {
-                if(an.Id == animalId)
-                {
-                    animal = an;
-                    _countAnimals--;
-                    _logger.Information($" {animalId} id animal is removed in cage {_idCage} ");
-                    break;
-                }
-            }
+            var animal = _animals.FirstOrDefault(an => an.Id == animalId);
 
-            if(animal != null)
+            if (animal != null)
             {
                 _animals.Remove(animal);
+                return true;
             }
+            return false;
         }
 
-        public void KillAnimal(int animalId)
+        public bool KillAnimal(int animalId)
         {
-            foreach(var animal in _animals)
+            var animal = _animals.FirstOrDefault(an => an.Id == animalId);
+
+            if (animal == null)
             {
-                if(animal.Id == animalId)
-                {
-                    animal.Dead();
-                    _logger.Information($"{animalId} id animal is Killed in cage {_idCage}");
-                    return;
-                }
+                animal.Dead();
+                return true;
             }
+            return false;
         }
 
-        public void FeedAnimals(Food food)
+        public void PutFood(Food food)
         {
-            if(food.FoodType != _typeFood)
+            if (food.FoodType != _food.FoodType)
                 throw new ArgumentException($"{_typeAnimal.Name}s can't eat  {food.FoodType} ");
 
-            _timer = new Timer(o => FeededAnimals(food));
-            _timer.Change(0, 1000);
+            _food.FoodWeight += food.FoodWeight;
+            FeedAnimals();
         }
 
         public override string ToString()
@@ -106,15 +87,25 @@ namespace ZooProject.Cages
             return sb.ToString();
         }
 
-        private void FinishFeeding(Food food)
+
+        private void FeedAnimals()
         {
-            if(food.FoodWeight == 0)
-            {
-                _logger.Information($" The animals ate all {food.FoodType} in cage {_idCage} ");
-                _timer.Dispose();
-            }
+            _timerToEatPerSecond = new Timer(o => FeedingCallback());
+            _timerToEatPerSecond.Change(0, 1000);
         }
 
-        
+        private void FeedingCallback()
+        {
+            foreach (var item in FeededAnimals.GetInvocationList())
+            {
+                item.DynamicInvoke(this, new FoodEventArgs(_food));
+                if (_food.FoodWeight == 0)
+                {
+                    _logger.Information($" The {_typeAnimal.Name}s ate all the {_food.FoodType} in cage {_idCage} ");
+                    _timerToEatPerSecond.Dispose();
+                    return;
+                }
+            }
+        }
     }
 }

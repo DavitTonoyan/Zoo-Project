@@ -20,9 +20,12 @@
         }
         public FoodType FoodType { get; }
 
-        public Food(FoodType foodType, double foodWeight)
+        public Food(FoodType foodType)
         {
-            FoodType = foodType;
+            this.FoodType = foodType;
+        } 
+        public Food(FoodType foodType, double foodWeight) :this(foodType)
+        {
             FoodWeight = foodWeight;
         }
 

@@ -1,12 +1,13 @@
-﻿namespace ZooProject.Cages
+﻿using ZooProject.Foods;
+
+namespace ZooProject.Cages
 {
     internal interface ICageAnimal
     {
         void AddAnimal(Animal animal);
-        void RemoveAnimal(int animalId);
-        void KillAnimal(int animalId);
-        void FeedAnimals(Food food);
-        event Action<Food> FeededAnimals;
-
+        bool RemoveAnimal(int animalId);
+        bool KillAnimal(int animalId);
+        void PutFood(Food food);
+        event EventHandler<FoodEventArgs> FeededAnimals;
     }
 }

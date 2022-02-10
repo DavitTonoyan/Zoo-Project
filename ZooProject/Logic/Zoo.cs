@@ -105,17 +105,27 @@ namespace ZooProject.Logic
 
         public void FeedAnimal(int cageId, Food food)
         {
-            _cages[cageId].FeedAnimals(food);
+            _cages[cageId].PutFood(food);
         }
 
-        public void KillAnimalFromCage(int cageId, int animalId)
+        public bool KillAnimalFromCage(int cageId, int animalId)
         {
-            _cages[cageId].KillAnimal(animalId);
+            if(cageId<0 || cageId>=_cages.Count)
+            {
+                throw new ArgumentOutOfRangeException("Cage Id  is  out of range");
+            }
+
+            return _cages[cageId].KillAnimal(animalId);
         }
 
-        public void RemoveAnimalFromCage(int cageId, int animalId)
+        public bool RemoveAnimalFromCage(int cageId, int animalId)
         {
-            _cages[cageId].RemoveAnimal(animalId);
+            if (cageId < 0 || cageId >= _cages.Count)
+            {
+                throw new ArgumentOutOfRangeException("Cage Id  is  out of range");
+            }
+
+            return _cages[cageId].RemoveAnimal(animalId);
         }
         public string ShowCages()
         {

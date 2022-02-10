@@ -69,6 +69,7 @@ namespace ZooProject.UI
             try
             {
                 _logic.AddCage(type);
+                _logger.Information($" New cage added");
             }
             catch (Exception ex)
             {
@@ -92,6 +93,7 @@ namespace ZooProject.UI
             try
             {
                 _logic.AddAnimal(cageId, typeOfAnimal, name, weight);
+                _logger.Information($" New animal added  in {cageId+1} cage");
             }
             catch (ArgumentOutOfRangeException ex)
             {
@@ -164,7 +166,14 @@ namespace ZooProject.UI
 
             try
             {
-                _logic.KillAnimalFromCage(cageId, animalId);
+                bool isKilled = _logic.KillAnimalFromCage(cageId, animalId);
+
+                if (isKilled)
+                    _logger.Information($"{animalId} id animal is Killed in cage {cageId}");
+
+                else
+                    _logger.Information($"{animalId} id animal does Not found in cage {cageId}");
+
             }
             catch (ArgumentOutOfRangeException ex)
             {
@@ -182,7 +191,13 @@ namespace ZooProject.UI
             cageId--;
             try
             {
-                _logic.RemoveAnimalFromCage(cageId, animalId);
+                bool isRemoved = _logic.RemoveAnimalFromCage(cageId, animalId);
+
+                if (isRemoved)
+                    _logger.Information($"{animalId} id animal is Killed in cage {cageId}");
+
+                else
+                    _logger.Information($"{animalId} id animal does Not found in cage {cageId}");
             }
             catch (ArgumentOutOfRangeException ex)
             {
