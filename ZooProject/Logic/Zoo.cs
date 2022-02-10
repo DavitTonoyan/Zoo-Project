@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using ZooProject.Animals;
 using ZooProject.Cages;
-using ZooProject.Logging;
+using ZooProject.Foods;
 
 namespace ZooProject.Logic
 {
@@ -110,7 +111,7 @@ namespace ZooProject.Logic
 
         public bool KillAnimalFromCage(int cageId, int animalId)
         {
-            if(cageId<0 || cageId>=_cages.Count)
+            if (cageId < 0 || cageId >= _cages.Count)
             {
                 throw new ArgumentOutOfRangeException("Cage Id  is  out of range");
             }

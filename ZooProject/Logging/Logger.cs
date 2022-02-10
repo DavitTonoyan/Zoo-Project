@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ZooProject.Logging
+﻿namespace ZooProject.Logging
 {
     sealed class Logger : ILogger
     {
@@ -39,8 +33,6 @@ namespace ZooProject.Logging
             string msg = $"Information: {DateTime.Now}  {warning}  \n";
             AppendToFile(msg);
         }
-
-
 
         private void AppendToFile(string massage)
         {

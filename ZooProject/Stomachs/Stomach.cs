@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ZooProject.Foods;
+﻿using ZooProject.Foods;
 
 namespace ZooProject.Stomachs
 {
-    internal class Stomach:IStomach
+    internal class Stomach : IStomach
     {
         private static Random _rand = new Random();
         private readonly double _deltaHungryWeight;
@@ -43,7 +38,7 @@ namespace ZooProject.Stomachs
             double hungrySize = MaxStomachSize - Weight;
 
             if (hungrySize <= 0)
-                return 0;
+                throw new Exception("Animal stomach is full");
 
             double ateWeight = 0;
             double weightToEatPerSecond = Weight * _rand.Next(2, 5) / 100;

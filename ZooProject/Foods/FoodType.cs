@@ -1,4 +1,4 @@
-﻿namespace ZooProject
+﻿namespace ZooProject.Foods
 {
     internal enum FoodType
     {

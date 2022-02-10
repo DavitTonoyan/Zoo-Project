@@ -1,4 +1,4 @@
-﻿namespace ZooProject
+﻿namespace ZooProject.Foods
 {
     internal class Food
     {
@@ -12,10 +12,14 @@
             }
             set
             {
-                if (value <= 0)
+                if (value < 0)
+                {
                     _foodWeight = 0;
-
-                _foodWeight = value;
+                }
+                else
+                {
+                    _foodWeight = value;
+                }
             }
         }
         public FoodType FoodType { get; }

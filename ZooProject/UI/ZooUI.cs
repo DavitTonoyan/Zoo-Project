@@ -1,4 +1,5 @@
-﻿using ZooProject.Logging;
+﻿using ZooProject.Foods;
+using ZooProject.Logging;
 using ZooProject.Logic;
 
 namespace ZooProject.UI
@@ -172,7 +173,7 @@ namespace ZooProject.UI
                     _logger.Information($"{animalId} id animal is Killed in cage {cageId}");
 
                 else
-                    _logger.Information($"{animalId} id animal does Not found in cage {cageId}");
+                    _logger.Warning($"{animalId} id animal does Not found in cage {cageId}");
 
             }
             catch (ArgumentOutOfRangeException ex)

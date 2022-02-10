@@ -1,8 +1,7 @@
 ﻿using System.Text;
-using System.Linq;
-using ZooProject.Logging;
-using ZooProject.Foods;
 using ZooProject.Animals;
+using ZooProject.Foods;
+using ZooProject.Logging;
 
 namespace ZooProject.Cages
 {
@@ -57,7 +56,7 @@ namespace ZooProject.Cages
         {
             var animal = _animals.FirstOrDefault(an => an.Id == animalId);
 
-            if (animal == null)
+            if (animal != null)
             {
                 animal.Dead();
                 return true;
@@ -98,12 +97,27 @@ namespace ZooProject.Cages
         {
             foreach (var item in FeededAnimals.GetInvocationList())
             {
-                item.DynamicInvoke(this, new FoodEventArgs(_food));
-                if (_food.FoodWeight == 0)
+                try
                 {
-                    _logger.Information($" The {_typeAnimal.Name}s ate all the {_food.FoodType} in cage {_idCage} ");
-                    _timerToEatPerSecond.Dispose();
-                    return;
+                    item.DynamicInvoke(this, new FoodEventArgs(_food));
+                    if (_food.FoodWeight == 0)
+                    {
+                        _logger.Information($" The {_typeAnimal.Name}s ate all the {_food.FoodType} in cage {_idCage} ");
+                        _timerToEatPerSecond.Dispose();
+                        return;
+                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.Error(ex.Message);
+                }
+                catch(ArgumentException ex)
+                {
+                    _logger.Warning(ex.Message);
+                }
+                catch(Exception ex)
+                {
+                    _logger.Warning(ex.Message);
                 }
             }
         }

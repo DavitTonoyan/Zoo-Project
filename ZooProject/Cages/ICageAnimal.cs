@@ -1,4 +1,5 @@
-﻿using ZooProject.Foods;
+﻿using ZooProject.Animals;
+using ZooProject.Foods;
 
 namespace ZooProject.Cages
 {

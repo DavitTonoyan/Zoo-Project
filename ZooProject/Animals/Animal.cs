@@ -10,6 +10,7 @@ namespace ZooProject.Animals
     {
         private static int _id;
         private static ILogger _logger = Logger.CreateInstance();
+        private readonly FoodType _foodType;
         private IStomach _stomach;
         private Timer _timerForHungry;
 
@@ -18,7 +19,7 @@ namespace ZooProject.Animals
         [IdLimit(5)]
         public int Id { get; }
 
-        public Animal(string name, double weight)
+        public Animal(string name, double weight, FoodType foodType)
         {
             _id++;
             var property = this.GetType().GetProperty("Id");
@@ -35,7 +36,7 @@ namespace ZooProject.Animals
             this.Name = name;
             Id = _id;
             _stomach = new Stomach(weight);
-
+            _foodType = foodType;
             _timerForHungry = new Timer(GetHungry);
             _timerForHungry.Change(5000, 5000);
         }
@@ -50,10 +51,20 @@ namespace ZooProject.Animals
         public void Eat(object sender, FoodEventArgs foodArgs)
         {
             if (!this.IsAlive)
-                return;
+                throw new InvalidOperationException($"{this.GetType().Name} {Name} Can Not eat because he is dead");
 
-            double ateWeight = _stomach.GetEatWeight(foodArgs);
-
+            if (foodArgs.Food.FoodType != _foodType)
+                throw new ArgumentException($"{this.GetType().Name} {Name} can not eat {foodArgs.Food.FoodType}");
+    
+             double ateWeight;
+            try
+            {
+                ateWeight = _stomach.GetEatWeight(foodArgs);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"{this.GetType().Name} {Name} {ex.Message}");
+            }
             _logger.Information($"{this.GetType().Name} {Name} ate {ateWeight} {foodArgs.Food.FoodType} ");
         }
 
