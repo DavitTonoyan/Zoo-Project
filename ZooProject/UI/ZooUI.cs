@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ZooProject.Foods;
+using ZooProject.Logging;
 using ZooProject.Logic;
 
 namespace ZooProject.UI
 {
     internal class ZooUI
     {
-        private Zoo logic = new Zoo();
+        private Zoo _logic = new Zoo();
+        private ILogger _logger = Logger.CreateInstance();
 
         public void Start()
         {
@@ -19,8 +17,8 @@ namespace ZooProject.UI
                 ShowCages();
 
                 Console.WriteLine("Choose your option  ");
-                Console.WriteLine("1) Add cage \n2) Add animal \n3) Feed animals of the cage \n"+
-                                  "4) Kill animal \n5) Remove animal \n"+
+                Console.WriteLine("1) Add cage \n2) Add animal \n3) Feed animals of the cage \n" +
+                                  "4) Kill animal \n5) Remove animal \n" +
                                   " Press esc to exit \n");
 
                 ConsoleKey key = Console.ReadKey().Key;
@@ -71,11 +69,13 @@ namespace ZooProject.UI
 
             try
             {
-                logic.AddCage(type);
+                _logic.AddCage(type);
+                _logger.Information($" New cage added");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
                 Console.ReadLine();
             }
             Console.WriteLine("Press any key to continue ");
@@ -93,19 +93,23 @@ namespace ZooProject.UI
             double weight = double.Parse(ReadWithLabel(" Enter weight of animal: "));
             try
             {
-                logic.AddAnimal(cageId, typeOfAnimal, name, weight);
+                _logic.AddAnimal(cageId, typeOfAnimal, name, weight);
+                _logger.Information($" New animal added  in {cageId+1} cage");
             }
             catch (ArgumentOutOfRangeException ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
             }
             catch (ArgumentException ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
             }
             Console.WriteLine("Press any key to continue ");
             Console.ReadKey();
@@ -121,11 +125,13 @@ namespace ZooProject.UI
 
             try
             {
-                food = logic.SetFood(foodType, weight);
+                food = _logic.SetFood(foodType, weight);
             }
             catch (ArgumentException ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
+
                 Console.WriteLine("Press any key to continue ");
                 Console.ReadKey();
                 return;
@@ -136,15 +142,17 @@ namespace ZooProject.UI
             cageId--;
             try
             {
-                logic.FeedAnimal(cageId, food);
+                _logic.FeedAnimal(cageId, food);
             }
-            catch(ArgumentOutOfRangeException ex)
+            catch (ArgumentOutOfRangeException ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
             }
             catch (ArgumentException ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
             }
 
             Console.WriteLine("Press any key to continue ");
@@ -159,11 +167,19 @@ namespace ZooProject.UI
 
             try
             {
-                logic.KillAnimalFromCage(cageId, animalId);
+                bool isKilled = _logic.KillAnimalFromCage(cageId, animalId);
+
+                if (isKilled)
+                    _logger.Information($"{animalId} id animal is Killed in cage {cageId}");
+
+                else
+                    _logger.Warning($"{animalId} id animal does Not found in cage {cageId}");
+
             }
-            catch(ArgumentOutOfRangeException ex)
+            catch (ArgumentOutOfRangeException ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
             }
             Console.WriteLine("Press any key to continue ");
             Console.ReadKey();
@@ -176,11 +192,18 @@ namespace ZooProject.UI
             cageId--;
             try
             {
-                logic.RemoveAnimalFromCage(cageId, animalId);
+                bool isRemoved = _logic.RemoveAnimalFromCage(cageId, animalId);
+
+                if (isRemoved)
+                    _logger.Information($"{animalId} id animal is Killed in cage {cageId}");
+
+                else
+                    _logger.Information($"{animalId} id animal does Not found in cage {cageId}");
             }
-            catch(ArgumentOutOfRangeException ex)
+            catch (ArgumentOutOfRangeException ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
             }
 
             Console.WriteLine("Press any key to continue ");
@@ -189,7 +212,7 @@ namespace ZooProject.UI
 
         private void ShowCages()
         {
-            string s = logic.ShowCages();
+            string s = _logic.ShowCages();
             Console.WriteLine(s);
         }
 

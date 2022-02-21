@@ -1,4 +1,6 @@
-﻿namespace ZooProject
+﻿using ZooProject.Foods;
+
+namespace ZooProject.Animals
 {
     internal class Fish : Animal
     {

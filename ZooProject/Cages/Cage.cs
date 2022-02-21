@@ -1,95 +1,84 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
+using ZooProject.Animals;
+using ZooProject.Foods;
+using ZooProject.Logging;
 
 namespace ZooProject.Cages
 {
     class Cage : ICageAnimal
     {
-        private static int id;
-        private readonly int idCage;
-        private readonly Type typeAnimal;
-        private readonly FoodType typeFood;   
-        private List<Animal> animals;
-        private int countAnimals;
-        private Timer timer;
-        public event Action<Food> FeedingAnimals;
+        private static int _id;
+        private static ILogger _logger = Logger.CreateInstance();
+        private readonly int _idCage;
+        private readonly Type _typeAnimal;
+        private Food _food;
+        private List<Animal> _animals;
+        private Timer _timerToEatPerSecond;
+        public event EventHandler<FoodEventArgs> FeededAnimals;
 
-        public Cage(Type typeOfAnimal, FoodType food)
+        public Cage(Type typeOfAnimal, FoodType foodType)
         {
-            id++;
-            typeAnimal = typeOfAnimal;
-            typeFood = food;
-            idCage = id;
-            animals = new List<Animal>();
-            FeedingAnimals += FinishFeeding;
+            _id++;
+            _typeAnimal = typeOfAnimal;
+            _food = new Food(foodType);
+            _idCage = _id;
+            _animals = new List<Animal>();
         }
 
         public void AddAnimal(Animal animal)
         {
-            if(animal.GetType() != typeAnimal )
+            if (animal.GetType() != _typeAnimal)
             {
-                throw new Exception($"{animal.GetType()} doesnt corresponding to cage type");
+                throw new Exception($"{animal.GetType()} doesnt suitable to cage type");
             }
 
-            if(countAnimals + 1 >5)
+            if (_animals.Count > 5)
             {
-                throw new IndexOutOfRangeException("ERROR: count of animals can't be greater than 5 ");
+                throw new IndexOutOfRangeException("count of animals can't be greater than 5 ");
             }
 
-
-            countAnimals++; 
-            animals.Add(animal);
+            _animals.Add(animal);
         }
 
-        public void RemoveAnimal(int animalId)
+        public bool RemoveAnimal(int animalId)
         {
-            Animal animal = null;
-            foreach(var an in animals)
-            {
-                if(an.Id == animalId)
-                {
-                    animal = an;
-                    countAnimals--;
-                    break;
-                }
-            }
+            var animal = _animals.FirstOrDefault(an => an.Id == animalId);
 
-            if(animal != null)
+            if (animal != null)
             {
-                animals.Remove(animal);
+                _animals.Remove(animal);
+                return true;
             }
+            return false;
         }
 
-        public void KillAnimal(int animalId)
+        public bool KillAnimal(int animalId)
         {
-            foreach(var animal in animals)
+            var animal = _animals.FirstOrDefault(an => an.Id == animalId);
+
+            if (animal != null)
             {
-                if(animal.Id == animalId)
-                {
-                    animal.Dead();
-                    return;
-                }
+                animal.Dead();
+                return true;
             }
+            return false;
         }
 
-        public void FeedAnimals(Food food)
+        public void PutFood(Food food)
         {
-            if(food.FoodType != typeFood)
-                throw new ArgumentException($"{typeAnimal.Name}s can't eat  {food.FoodType} ");
+            if (food.FoodType != _food.FoodType)
+                throw new ArgumentException($"{_typeAnimal.Name}s can't eat  {food.FoodType} ");
 
-            timer = new Timer(o => FeedingAnimals(food));
-            timer.Change(0, 1000);
+            _food.FoodWeight += food.FoodWeight;
+            FeedAnimals();
         }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append($" Cage id:  {idCage}  \n");
+            sb.Append($" Cage id:  {_idCage}  \n");
 
-            foreach (var animal in animals)
+            foreach (var animal in _animals)
             {
                 sb.Append(animal.ToString() + "\n\n");
             }
@@ -97,14 +86,40 @@ namespace ZooProject.Cages
             return sb.ToString();
         }
 
-        private void FinishFeeding(Food food)
+
+        private void FeedAnimals()
         {
-            if(food.FoodWeight == 0)
-            {
-                timer.Dispose();
-            }
+            _timerToEatPerSecond = new Timer(o => FeedingCallback());
+            _timerToEatPerSecond.Change(0, 1000);
         }
 
-        
+        private void FeedingCallback()
+        {
+            foreach (var item in FeededAnimals.GetInvocationList())
+            {
+                try
+                {
+                    item.DynamicInvoke(this, new FoodEventArgs(_food));
+                    if (_food.FoodWeight == 0)
+                    {
+                        _logger.Information($" The {_typeAnimal.Name}s ate all the {_food.FoodType} in cage {_idCage} ");
+                        _timerToEatPerSecond.Dispose();
+                        return;
+                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.Error(ex.Message);
+                }
+                catch(ArgumentException ex)
+                {
+                    _logger.Warning(ex.Message);
+                }
+                catch(Exception ex)
+                {
+                    _logger.Warning(ex.Message);
+                }
+            }
+        }
     }
 }
