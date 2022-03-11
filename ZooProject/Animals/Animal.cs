@@ -12,7 +12,6 @@ namespace ZooProject.Animals
         private static ILogger _logger = Logger.CreateInstance();
         private readonly FoodType _foodType;
         private IStomach _stomach;
-        private Timer _timerForHungry;
 
         public bool IsAlive { get; private set; } = true;
         public string Name { get; set; }
@@ -37,13 +36,12 @@ namespace ZooProject.Animals
             Id = _id;
             _stomach = new Stomach(weight);
             _foodType = foodType;
-            _timerForHungry = new Timer(GetHungry);
-            _timerForHungry.Change(5000, 5000);
+
+            StartHungryTime();
         }
 
         public void Dead()
         {
-            _timerForHungry.Dispose();
             IsAlive = false;
             _logger.Information($"{this.GetType().Name} {Name} is die ");
         }
@@ -80,18 +78,30 @@ namespace ZooProject.Animals
             return s;
         }
 
-        private void GetHungry(object ob)
+        private void StartHungryTime()
         {
-            bool isDying = _stomach.IsDyingForHungry();
+            Thread getHungry = new Thread(GetHungry);
+            getHungry.IsBackground = true;
 
-            if (isDying)
+            getHungry.Start();
+        }
+        private void GetHungry()
+        {
+            while (true)
             {
-                _logger.Warning($"the {this.GetType().Name}: {Name} is going to die soon ");
-            }
+                bool isDying = _stomach.IsDyingForHungry();
 
-            if (_stomach.Weight == 0)
-            {
-                Dead();
+                if (isDying)
+                {
+                    _logger.Warning($"the {this.GetType().Name}: {Name} is going to die soon ");
+                }
+
+                if (_stomach.Weight == 0)
+                {
+                    Dead();
+                    return;
+                }
+                Thread.Sleep(5000);
             }
         }
     }
